@@ -110,7 +110,8 @@ class MCPConfigManager {
       "mcp__github__get_file",
       "mcp__github__create_branch",
       "mcp__github__list_files",
-      "mcp__github__get_file_contents"
+      "mcp__github__get_file_contents",
+      "mcp__github__list_pull_requests"
     ];
   }
 
@@ -127,19 +128,23 @@ class MCPConfigManager {
 
     const allowedTools = [
       // File operations (restricted to target repository)
-      `Read(${workingDir}/**)`,
-      `Edit(${workingDir}/**)`,
-      `MultiEdit(${workingDir}/**)`,
-      `Glob(${workingDir}/**)`,
-      `Grep(${workingDir}/**)`,
+      "LS",
+      `Read(/${workingDir}/**)`,
+      `Edit(/${workingDir}/**)`,
+      `MultiEdit(/${workingDir}/**)`,
+      `Write(/${workingDir}/**)`,
+      `Glob(/${workingDir}/**)`,
+      `Grep(/${workingDir}/**)`,
 
       // System commands (restricted to working directory)
-      `Bash(ls:${workingDir}/**)`,
-      `Bash(find:${workingDir}/**)`,
-      `Bash(cat:${workingDir}/**)`,
-      `Bash(head:${workingDir}/**)`,
-      `Bash(tail:${workingDir}/**)`,
-      `Bash(wc:${workingDir}/**)`
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(xargs:*)"
     ];
 
     // Add AWS MCP tools if credentials are available
@@ -173,7 +178,10 @@ class MCPConfigManager {
 
       config.mcpServers["applicationsignals"] = {
         ...applicationSignalsConfig,
-        env: this.getAWSEnvVars(),
+        env: {
+          ...applicationSignalsConfig.env,
+          ...this.getAWSEnvVars()
+        },
         autoApprove: this.getApplicationSignalsToolsList(),
         disabled: false
       };
@@ -185,7 +193,10 @@ class MCPConfigManager {
 
       config.mcpServers["awslabs.cloudwatch-mcp-server"] = {
         ...cloudwatchConfig,
-        env: this.getAWSEnvVars(),
+        env: {
+          ...cloudwatchConfig.env,
+          ...this.getAWSEnvVars()
+        },
         autoApprove: this.getCloudWatchToolsList(),
         disabled: false
       };
